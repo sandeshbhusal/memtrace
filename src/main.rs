@@ -9,10 +9,18 @@ use nix::{
     unistd::Pid,
 };
 
+mod bin;
+mod pid;
+mod syscalls;
+
 #[cfg(target_os = "linux")]
 fn main() {
     // Initialize logging.
+
+    use crate::syscalls::syscalls;
     env_logger::init();
+
+    let all_syscalls = syscalls().clone();
 
     // Check for binary arguments.
     let args = Command::new("memtrace").args(&[
@@ -30,6 +38,8 @@ fn main() {
 |__|  |__| |_______||__|  |__|     |__|     | _| `._____/__/     \__\ \______||_______|
     "#
     );
+
+    log::info!("Loaded {} syscalls list.", all_syscalls.len());
     if let Some(pid) = args.get_one::<String>("pid") {
         // Pid based workflow.
         let pid = pid
@@ -69,7 +79,10 @@ fn main() {
                     loop {
                         let regs = ptrace::getregs(pid).unwrap();
                         if entry_syscall {
-                            log::debug!("Got syscall {} at rip {:x}", regs.orig_rax, regs.rip)
+                            let s = all_syscalls.lookup(regs);
+                            if let Some(s) = s {
+                                log::debug!("{}", s);
+                            }
                         }
 
                         // Resubmit for tracing.
@@ -85,6 +98,12 @@ fn main() {
         }
     } else {
         // Binary based workflow.
+        // if let Some(command) = args.get_one::<String>("bin") {
+        //     let command = command.split(' ').collect::<Vec<&str>>();
+        //     let process = std::process::Command::new(command.get(0).unwrap());
+        // } else {
+        //     panic!("No binary argument passed.")
+        // }
     }
 }
 

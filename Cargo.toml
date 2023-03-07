@@ -10,3 +10,6 @@ nix = { version = "*", features = ["ptrace"] }
 log = "*"
 env_logger = "*"
 clap = "*"
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"
+lazy_static = "*"

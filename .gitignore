@@ -1,1 +1,4 @@
 /target
+Cargo.lock
+src/io_calls.json
+src/memory_calls.json
