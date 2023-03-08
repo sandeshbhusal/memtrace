@@ -10,18 +10,19 @@ use nix::{
 };
 
 mod bin;
+mod fd;
 mod pid;
 mod syscalls;
-mod fd;
+mod procinfo;
 
 #[cfg(target_os = "linux")]
 fn main() {
     // Initialize logging.
 
-    use crate::syscalls::syscalls;
+    use crate::syscalls::gen_syscalls_table;
     env_logger::init();
 
-    let all_syscalls = syscalls().clone();
+    let all_syscalls = gen_syscalls_table().clone();
 
     // Check for binary arguments.
     let args = Command::new("memtrace").args(&[
