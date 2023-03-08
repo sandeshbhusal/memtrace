@@ -12,6 +12,7 @@ use nix::{
 mod bin;
 mod pid;
 mod syscalls;
+mod fd;
 
 #[cfg(target_os = "linux")]
 fn main() {
